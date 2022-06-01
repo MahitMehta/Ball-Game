@@ -6,7 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.Shape;
 
-public class Goal extends GameObject {
+public class Goal extends Circle {
     private int r; 
     private Shape shape; 
 

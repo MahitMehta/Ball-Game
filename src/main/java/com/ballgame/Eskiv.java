@@ -22,7 +22,7 @@ import javax.swing.JPanel;
 public final class Eskiv extends JPanel implements Runnable, KeyListener {   
     private static final int WIDTH = 750; 
     private static final int HEIGHT = 500; 
-    private static final int FPS = 120;
+    private static final int FPS = 144;
 
     private final Long startTime; 
     private double deltaTime;     
@@ -94,7 +94,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
     public void generateRandomBall() {
         Random random = new Random();
 
-        int size = random.nextInt(11) + 10;
+        int size = random.nextInt(11) + 20;
 
         int x = random.nextInt(Eskiv.WIDTH - 100 - (size * 2)) + 50;
         int y = random.nextInt(Eskiv.HEIGHT - 100 - (size * 2)) + 50;
@@ -168,7 +168,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
 
         try {
             this.gameLoop(g2d, this.previousTime);
-        } catch(InterruptedException e) {
+        } catch(Exception e) {
             e.printStackTrace();
         }
     }
@@ -180,7 +180,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
                 repaint();
                 Thread.sleep(1000 / Eskiv.FPS);
             }
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     } 
@@ -193,7 +193,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
         g.drawString(text, x, y);
     }
 
-    public void gameLoop(Graphics2D g2d, double previousTime) throws InterruptedException {
+    public void gameLoop(Graphics2D g2d, double previousTime) throws InterruptedException, IOException {
         // Display FPS
         g2d.setFont(ROBOTO_12);
         g2d.setColor(Color.WHITE);
@@ -211,6 +211,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
                 Ball b = (Ball) obj;
 
                 if (b.getShape().intersects(this.player.getShape().getBounds2D())) {
+                // if (b.intersects(this.player)) {
                     int highScore = this.state.getHighScore();
 
                     if (this.gameScore > highScore) {

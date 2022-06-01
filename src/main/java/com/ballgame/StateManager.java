@@ -94,7 +94,7 @@ public class StateManager {
         }
     }
 
-    public JsonObject getJSONBody() throws IOException {
+    private JsonObject getJSONBody() throws IOException {
         Reader reader = Files.newBufferedReader(Paths.get(TEMP_DIR, STORE_FILENAME));
         JsonObject body = gson.fromJson(reader, JsonObject.class);
         return body; 

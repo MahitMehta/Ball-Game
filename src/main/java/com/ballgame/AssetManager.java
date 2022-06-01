@@ -37,8 +37,9 @@ public class AssetManager {
 
     public void loadBallAssets() throws IOException {
         for (String path : fireballSpritesPaths) {
-            BufferedImage img = ImageIO.read(new File(Paths.get(ASSETS_PATH, path).toString()));
-            this.fireballSprites.add(img);
+            File img = new File(Paths.get(ASSETS_PATH, path).toString());
+            BufferedImage image = ImageIO.read(img); 
+            this.fireballSprites.add(image); 
         }
     }
 }

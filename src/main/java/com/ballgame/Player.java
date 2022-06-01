@@ -6,7 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 
-public class Player extends GameObject {
+public class Player extends Circle {
     private double velX;
     private double velY;
     private double a; 
@@ -33,13 +33,15 @@ public class Player extends GameObject {
         this.up = false; 
         this.right = false; 
 
-        this.width = 35;
-        this.height = 35; 
+        this.width = 32;
+        this.height = 32; 
 
         this.maxVel = maxVel;
         this.velX = 0; 
         this.velY = 0; 
         this.a = 400; 
+
+        this.r = this.width / 2;
 
         this.shape = new Ellipse2D.Double((int) this.x, (int) this.y, this.width, this.height);
     }
