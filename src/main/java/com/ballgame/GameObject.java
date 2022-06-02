@@ -70,9 +70,9 @@ public abstract class GameObject {
         return true;
     }
 
-    public double getDistance(double otherX, double otherY) {
-        double deltaX = otherX - this.x; 
-        double deltaY = otherY - this.y; 
+    public double getDistance(double x, double y, double otherX, double otherY) {
+        double deltaX = otherX - x; 
+        double deltaY = otherY - y; 
         return Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
     }
 

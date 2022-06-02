@@ -24,12 +24,10 @@ public class Ball extends Circle {
         this.velY = velY;
         this.r = r; 
 
-        this.shape = new Ellipse2D.Double((int) this.x, (int) this.y, this.r * 2, this.r * 2);
+        this.shape = new Ellipse2D.Double((int) this.x, (int) this.y, this.getDiameter(), this.getDiameter());
     }
 
     public Ellipse2D.Double getShape() { return (Ellipse2D.Double) this.shape; }
-
-    public int getRadius() { return this.r; }
 
     public double getVelX() { return this.velX; }
 
@@ -69,11 +67,11 @@ public class Ball extends Circle {
     }
 
     public void render(Graphics2D g2d) {     
-        int diameter = (int)(this.r * 2 * this.imagePaddingFactor); 
-        int translationAdjustment = (diameter - (this.r * 2)) / 2;
+        int diameter = (int)(this.getDiameter()* this.imagePaddingFactor); 
+        int translationAdjustment = (diameter - this.getDiameter()) / 2;
 
         g2d.drawImage(this.image, (int) this.x - translationAdjustment, (int) this.y - translationAdjustment, diameter, diameter, null);
         Ellipse2D.Double obj = (Ellipse2D.Double) this.shape;
-        obj.setFrame(this.x, this.y, this.r * 2, this.r * 2);
+        obj.setFrame(this.x, this.y, this.getDiameter(), this.getDiameter());
     }
 }

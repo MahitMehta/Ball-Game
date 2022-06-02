@@ -7,7 +7,6 @@ import java.awt.geom.Ellipse2D;
 import java.awt.Shape;
 
 public class Goal extends Circle {
-    private int r; 
     private Shape shape; 
 
     public Goal() {
@@ -19,7 +18,7 @@ public class Goal extends Circle {
 
         this.r = r; 
 
-        this.shape = new Ellipse2D.Double((int) this.x, (int) this.y, this.r * 2, this.r * 2);
+        this.shape = new Ellipse2D.Double((int) this.x, (int) this.y, this.getDiameter(), this.getDiameter());
     }
 
     public Ellipse2D.Double getShape() { return (Ellipse2D.Double) this.shape; }
@@ -30,7 +29,7 @@ public class Goal extends Circle {
         g2d.setColor(Color.GREEN);
         
         Ellipse2D.Double obj = (Ellipse2D.Double) this.shape;
-        obj.setFrame(this.x, this.y, this.r * 2, this.r * 2);
+        obj.setFrame(this.x, this.y, this.getDiameter(), this.getDiameter());
 
         g2d.fill(this.shape);
     }

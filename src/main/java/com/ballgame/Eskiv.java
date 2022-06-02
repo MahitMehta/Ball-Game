@@ -210,8 +210,8 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
             if (obj instanceof Ball) {
                 Ball b = (Ball) obj;
 
-                if (b.getShape().intersects(this.player.getShape().getBounds2D())) {
-                // if (b.intersects(this.player)) {
+
+                if (b.intersects(this.player)) {
                     int highScore = this.state.getHighScore();
 
                     if (this.gameScore > highScore) {
@@ -223,7 +223,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
 
                 b.render(g2d);
 
-                if (b.getX() + b.getRadius() * 2 >= Eskiv.WIDTH) {
+                if (b.getX() + b.getDiameter() >= Eskiv.WIDTH) {
                     b.setVelX(-b.getVelX());
                 }
 
@@ -233,7 +233,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
 
                 // Constant Accommodates for MacOS Header Height
                 final int HEADER_TOP = 27; 
-                if (b.getY() + HEADER_TOP+ b.getRadius() * 2 >= Eskiv.HEIGHT) {
+                if (b.getY() + HEADER_TOP+ b.getDiameter() >= Eskiv.HEIGHT) {
                     b.setVelY(-b.getVelY());
                 }
 
@@ -253,18 +253,18 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
         if (!gameLost && gameStarted) player.update(deltaTime, previousTime);
 
         if (player.getX() > Eskiv.WIDTH) {
-            player.setTransformX(-player.getWidth());
+            player.setTransformX(-player.getDiameter());
         }
 
-        if (player.getX() < -player.getWidth()) {
+        if (player.getX() < -player.getDiameter()) {
             player.setTransformX(Eskiv.WIDTH);
         }
 
         if (player.getY() > Eskiv.HEIGHT) {
-            player.setTransformY(-player.getHeight());
+            player.setTransformY(-player.getDiameter());
         }
 
-        if (player.getY() < -player.getHeight()) {
+        if (player.getY() < -player.getDiameter()) {
             player.setTransformY(Eskiv.HEIGHT);
         }
 
@@ -272,8 +272,8 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
             this.gameScore++;
 
             Random random = new Random();
-            int x = random.nextInt(Eskiv.WIDTH - 50 + 1) + 50 - player.getWidth();
-            int y = random.nextInt(Eskiv.HEIGHT - 50 + 1) + 50 - player.getHeight();
+            int x = random.nextInt(Eskiv.WIDTH - 50 + 1) + 50 - player.getDiameter();
+            int y = random.nextInt(Eskiv.HEIGHT - 50 + 1) + 50 - player.getDiameter();
             goal.setTransform(x, y);
 
             generateRandomBall();

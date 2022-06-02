@@ -17,9 +17,6 @@ public class Player extends Circle {
     private boolean down; 
     private boolean up; 
     private boolean right; 
-    
-    private int width; 
-    private int height; 
 
     public Player() {
         this(0, 0, 120.0);
@@ -31,19 +28,16 @@ public class Player extends Circle {
         this.left = false;
         this.down = false; 
         this.up = false; 
-        this.right = false; 
-
-        this.width = 32;
-        this.height = 32; 
+        this.right = false;  
 
         this.maxVel = maxVel;
         this.velX = 0; 
         this.velY = 0; 
-        this.a = 400; 
+        this.a = 800; 
 
-        this.r = this.width / 2;
+        this.r = 16; 
 
-        this.shape = new Ellipse2D.Double((int) this.x, (int) this.y, this.width, this.height);
+        this.shape = new Ellipse2D.Double((int) this.x, (int) this.y, this.getDiameter(), this.getDiameter());
     }
 
     public Ellipse2D.Double getShape() { return (Ellipse2D.Double) this.shape; }
@@ -55,15 +49,6 @@ public class Player extends Circle {
     public void setDown(boolean state) { this.down = state; }
 
     public void setUp(boolean state) { this.up = state; }
-
-    public int getWidth() {
-        return this.width;
-    }
-    
-    public int getHeight() {
-        return this.height;
-    }
-
 
     public double getSpeed() {
         return this.maxVel;
@@ -143,7 +128,7 @@ public class Player extends Circle {
         g2d.setColor(Color.BLUE);
 
         Ellipse2D.Double obj = (Ellipse2D.Double) this.shape;
-        obj.setFrame(this.x, this.y, this.width, this.height);
+        obj.setFrame(this.x, this.y, this.getDiameter(), this.getDiameter());
 
         g2d.fill(this.shape);
     }
