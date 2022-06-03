@@ -3,6 +3,7 @@ package com.ballgame;
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -23,6 +24,16 @@ public class AssetManager {
 
     public List<BufferedImage> getFireballSprites() {
         return this.fireballSprites;
+    }
+
+    public static <T> LinkedList<T> clone(Class<T> generic, List<T> e) {
+        LinkedList<T> clone = new LinkedList<T>();
+
+        for (T i : e) {
+            clone.add((T) i);
+        }
+
+        return clone; 
     }
 
     public AssetManager() {

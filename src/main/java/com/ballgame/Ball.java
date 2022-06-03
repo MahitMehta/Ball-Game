@@ -19,7 +19,7 @@ public class Ball extends Circle {
         super(x, y);
 
         this.initSprites(sprites, 15,1.6);
-;      
+     
         this.velX = velX; 
         this.velY = velY;
         this.r = r; 
@@ -35,28 +35,27 @@ public class Ball extends Circle {
 
     public void setVelX(double velX) {
         this.velX = velX; 
-        // this.rotateSprites();
     }
 
     public void setVelY(double velY) {
         this.velY = velY; 
-        // this.rotateSprites();
     }
 
-    // public void rotateSprites() {
-    //     double angle = Math.atan(this.velX / -this.velY);
-    //     for (int i = 0; i < this.originalSprites.size(); i++) {
-    //         BufferedImage rotatedImage = this.rotateImage(this.originalSprites.get(i), angle * 180);
-    //         this.sprites.set(i, rotatedImage);
-    //     }
-    // }
+    public void rotateSprites() {
+        double angle = Math.atan(this.velX / -this.velY);
+        for (int i = 0; i < this.sprites.size(); i++) {
+            BufferedImage rotatedImage = this.rotateImage(this.sprites.get(i), angle * 180);
+            this.transformedSprites.set(i, rotatedImage);
+        }
+    }
 
     public void update(double deltaTime, double previousTime) {
-        boolean incrementedFrame = this.incrementImageFrame(deltaTime, previousTime);
+        boolean incrementedFrame = 
+        this.incrementImageFrame(deltaTime, previousTime);
 
         if (incrementedFrame) {
             double angle = Math.atan(this.velX / -this.velY);
-            BufferedImage rotatedSprite = this.rotateImage(this.image, angle * 180);
+            BufferedImage rotatedSprite = this.rotateImage((BufferedImage) this.image, angle * 180);
             this.image = rotatedSprite;
         }
 
@@ -69,6 +68,19 @@ public class Ball extends Circle {
     public void render(Graphics2D g2d) {     
         int diameter = (int)(this.getDiameter()* this.imagePaddingFactor); 
         int translationAdjustment = (diameter - this.getDiameter()) / 2;
+
+       //  double scale = diameter / (double) this.image.getWidth(); 
+
+        // AffineTransform identity = new AffineTransform();
+        // AffineTransform trans = new AffineTransform();
+        // trans.setTransform(identity);
+        // trans.rotate( Math.toRadians(45) );
+        // trans.scale(scale, scale);
+
+        // int x = (int) this.x - translationAdjustment; 
+        // int y = (int) this.y - translationAdjustment;
+
+       // g2d.drawImage(this.image, trans, null);
 
         g2d.drawImage(this.image, (int) this.x - translationAdjustment, (int) this.y - translationAdjustment, diameter, diameter, null);
         Ellipse2D.Double obj = (Ellipse2D.Double) this.shape;

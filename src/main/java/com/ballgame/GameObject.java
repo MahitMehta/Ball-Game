@@ -9,22 +9,18 @@ import java.awt.geom.AffineTransform;
 public abstract class GameObject {
     protected double x; 
     protected double y; 
-    
-    protected double rotation; 
 
     protected double imagePaddingFactor = 1.0d; 
-    protected Image image; 
+    protected BufferedImage image; 
     protected double imageFrame;
     protected int imageFPS; 
 
     protected List<BufferedImage> sprites; 
-    protected List<BufferedImage> originalSprites; 
+    protected List<BufferedImage> transformedSprites; 
 
     public GameObject(int x, int y) {
         this.x = x; 
         this.y = y; 
-
-        this.rotation = 0d; 
     }
 
     public GameObject() {
@@ -36,12 +32,12 @@ public abstract class GameObject {
     public List<BufferedImage> getSprites() { return this.sprites; }
 
     public double getY() { return this.y; }
-
+ 
     public double getX() { return this.x; }
 
     protected void initSprites(List<BufferedImage> sprites, int imageFPS, double imagePaddingFactor) {
         if (sprites.size() > 0) {
-            this.originalSprites = sprites; 
+            this.transformedSprites = AssetManager.clone(BufferedImage.class, sprites); 
             this.imagePaddingFactor = imagePaddingFactor; 
             this.sprites = sprites;
             this.imageFPS = imageFPS; 
@@ -77,8 +73,6 @@ public abstract class GameObject {
     }
 
     public BufferedImage rotateImage(Image image, double angle) {
-        this.rotation += angle; 
-
         double rads = Math.toRadians(angle);
         double sin = Math.abs(Math.sin(rads)), cos = Math.abs(Math.cos(rads));
         int w = image.getWidth(null);

@@ -268,7 +268,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
             player.setTransformY(Eskiv.HEIGHT);
         }
 
-        if (goal.getShape().intersects(player.getShape().getBounds2D())) {
+        if (this.goal.intersects(this.player)) {
             this.gameScore++;
 
             Random random = new Random();
