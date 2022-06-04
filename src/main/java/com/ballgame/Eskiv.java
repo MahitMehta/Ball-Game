@@ -20,8 +20,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public final class Eskiv extends JPanel implements Runnable, KeyListener {   
-    private static final int WIDTH = 750; 
-    private static final int HEIGHT = 500; 
+    public static final int WIDTH = 750; 
+    public static final int HEIGHT = 500; 
+    public static final int HEADER_TOP = 27; 
     private static final int FPS = 144;
 
     private final Long startTime; 
@@ -60,7 +61,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
         JFrame frame = new JFrame("Eskiv Game");
         frame.add(this);  
         frame.getContentPane().setBackground(Color.BLACK);
-        frame.setSize(Eskiv.WIDTH, Eskiv.HEIGHT);  
+        frame.setSize(Eskiv.WIDTH, Eskiv.HEIGHT + Eskiv.HEADER_TOP);  
         frame.setLocationRelativeTo(null);  
         frame.setResizable(false);
         frame.addKeyListener(this);
@@ -94,7 +95,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
     public void generateRandomBall() {
         Random random = new Random();
 
-        int size = random.nextInt(11) + 20;
+        int size = random.nextInt(6) + 10;
 
         int x = random.nextInt(Eskiv.WIDTH - 100 - (size * 2)) + 50;
         int y = random.nextInt(Eskiv.HEIGHT - 100 - (size * 2)) + 50;
@@ -102,7 +103,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
         int velX = random.nextInt(51) + 100;
         int velY = random.nextInt(51) + 100;
 
-        GameObject b = new Ball(x, y, velX, velY, size, am.getFireballSprites());
+        GameObject b = new Fireball(x, y, velX, velY, size, am.getFireballSprites());
         obstacles.add(b); 
     }
 
@@ -207,8 +208,33 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
 
         // Update Obstacles 
         for (GameObject obj : this.obstacles) {
-            if (obj instanceof Ball) {
-                Ball b = (Ball) obj;
+            if (obj instanceof WallBarrier) {
+                WallBarrier wb = (WallBarrier) obj;
+                wb.render(g2d);
+
+                if (wb.getShape().intersects(this.player.getShape().getBounds2D())){
+                    this.player.setVelX(0);
+                    if (wb.getSide() == WallBarrier.Side.RIGHT) {
+                        if (this.player.getX() > wb.getCenterX()) {
+                            this.player.setTransformX(wb.getX() +  wb.getWidth());
+                        } else {
+                            this.player.setTransformX(wb.getX() - this.player.getDiameter());
+                        }
+                    } else if (wb.getSide() == WallBarrier.Side.LEFT) {
+                        if (this.player.getX() > wb.getCenterX()) {
+                            this.player.setTransformX(wb.getX() + wb.getWidth());
+                        } else {
+                            this.player.setTransformX(wb.getX() - player.getDiameter());
+                        }
+                    }
+                }
+
+                if (!gameLost && gameStarted) {
+                    wb.update(this.deltaTime, previousTime);
+                }
+            }
+            if (obj instanceof Fireball) {
+                Fireball b = (Fireball) obj;
 
 
                 if (b.intersects(this.player)) {
@@ -232,8 +258,8 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
                 }
 
                 // Constant Accommodates for MacOS Header Height
-                final int HEADER_TOP = 27; 
-                if (b.getY() + HEADER_TOP+ b.getDiameter() >= Eskiv.HEIGHT) {
+               
+                if (b.getY() + b.getDiameter() >= Eskiv.HEIGHT) {
                     b.setVelY(-b.getVelY());
                 }
 
@@ -269,12 +295,22 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
         }
 
         if (this.goal.intersects(this.player)) {
-            this.gameScore++;
+            this.gameScore += 5;
 
             Random random = new Random();
             int x = random.nextInt(Eskiv.WIDTH - 50 + 1) + 50 - player.getDiameter();
             int y = random.nextInt(Eskiv.HEIGHT - 50 + 1) + 50 - player.getDiameter();
             goal.setTransform(x, y);
+
+            if (this.gameScore == 15) {
+                WallBarrier wb = new WallBarrier(10, 100, WallBarrier.Side.LEFT); 
+                wb.setVelY(100);
+                this.obstacles.add(wb);
+            } else if (this.gameScore == 35) {
+                WallBarrier wb = new WallBarrier(10, 100, WallBarrier.Side.RIGHT); 
+                wb.setVelY(150);
+                this.obstacles.add(wb);
+            }
 
             generateRandomBall();
         }
@@ -328,7 +364,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
             this.player.setUp(false);
         }
 
-        if (ke.getKeyCode() == 39 || ke.getKeyCode() == 83) {
+        if (ke.getKeyCode() == 39 || ke.getKeyCode() == 68) {
             this.player.setRight(false);
         }
 

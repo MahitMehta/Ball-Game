@@ -6,16 +6,16 @@ import java.awt.Shape;
 import java.awt.image.*;
 import java.util.List;
 
-public class Ball extends Circle {
+public class Fireball extends Circle {
     private Shape shape; 
     private double velX; 
     private double velY; 
 
-    public Ball(List<BufferedImage> sprites) {
+    public Fireball(List<BufferedImage> sprites) {
         this(0, 0, 0, 80, 80, sprites);
     }
 
-    public Ball(int x, int y, double velX, double velY, int r, List<BufferedImage> sprites) {
+    public Fireball(int x, int y, double velX, double velY, int r, List<BufferedImage> sprites) {
         super(x, y);
 
         this.initSprites(sprites, 15,1.6);
@@ -68,19 +68,6 @@ public class Ball extends Circle {
     public void render(Graphics2D g2d) {     
         int diameter = (int)(this.getDiameter()* this.imagePaddingFactor); 
         int translationAdjustment = (diameter - this.getDiameter()) / 2;
-
-       //  double scale = diameter / (double) this.image.getWidth(); 
-
-        // AffineTransform identity = new AffineTransform();
-        // AffineTransform trans = new AffineTransform();
-        // trans.setTransform(identity);
-        // trans.rotate( Math.toRadians(45) );
-        // trans.scale(scale, scale);
-
-        // int x = (int) this.x - translationAdjustment; 
-        // int y = (int) this.y - translationAdjustment;
-
-       // g2d.drawImage(this.image, trans, null);
 
         g2d.drawImage(this.image, (int) this.x - translationAdjustment, (int) this.y - translationAdjustment, diameter, diameter, null);
         Ellipse2D.Double obj = (Ellipse2D.Double) this.shape;

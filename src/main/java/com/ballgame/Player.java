@@ -54,6 +54,14 @@ public class Player extends Circle {
         return this.maxVel;
     }
 
+    public void setVelX(double velX) {
+        this.velX = velX; 
+    }
+
+    public void setVelY(double velY) {
+        this.velY = velY; 
+    }
+
     public void update(double deltaTime, double previousTime) {
         double incrementX = this.velX * (deltaTime - previousTime);
         double incrementY = this.velY * (deltaTime - previousTime);
