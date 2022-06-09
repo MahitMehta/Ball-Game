@@ -13,11 +13,11 @@ public class AssetManager {
     private String ASSETS_PATH = "src/main/java/com/ballgame/assets/";
 
     private String[] fireballSpritesPaths = {
-        "fireball/fb-1.png",
-        "fireball/fb-2.png",
-        "fireball/fb-3.png",
-        "fireball/fb-4.png",
-        "fireball/fb-5.png"
+            "fireball/fb-1.png",
+            "fireball/fb-2.png",
+            "fireball/fb-3.png",
+            "fireball/fb-4.png",
+            "fireball/fb-5.png"
     };
 
     private List<BufferedImage> fireballSprites;
@@ -29,16 +29,15 @@ public class AssetManager {
     public static <T> LinkedList<T> clone(Class<T> generic, List<T> e) {
         LinkedList<T> clone = new LinkedList<T>();
 
-        for (T i : e) {
+        for (T i : e)
             clone.add((T) i);
-        }
 
-        return clone; 
+        return clone;
     }
 
     public AssetManager() {
         fireballSprites = new ArrayList<BufferedImage>();
-        
+
         try {
             loadBallAssets();
         } catch (IOException e) {
@@ -49,8 +48,8 @@ public class AssetManager {
     public void loadBallAssets() throws IOException {
         for (String path : fireballSpritesPaths) {
             File img = new File(Paths.get(ASSETS_PATH, path).toString());
-            BufferedImage image = ImageIO.read(img); 
-            this.fireballSprites.add(image); 
+            BufferedImage image = ImageIO.read(img);
+            this.fireballSprites.add(image);
         }
     }
 }

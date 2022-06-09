@@ -19,9 +19,9 @@ import com.google.gson.JsonPrimitive;
 
 public class StateManager {
     private final String TEMP_DIR;
-    private final String STORE_FILENAME; 
-    private JsonObject body = null; 
-    
+    private final String STORE_FILENAME;
+    private JsonObject body = null;
+
     private final Gson gson;
 
     public static enum STATE_KEYS {
@@ -35,9 +35,7 @@ public class StateManager {
 
         STORE_FILENAME = "ballgame.state.json";
 
-        File stateFile = new File(
-            Paths.get(TEMP_DIR, STORE_FILENAME).toString()
-        );
+        File stateFile = new File(Paths.get(TEMP_DIR, STORE_FILENAME).toString());
 
         try {
             if (!stateFile.exists()) {
@@ -45,7 +43,7 @@ public class StateManager {
 
                 this.updateKeyWithPrimitive(STATE_KEYS.HIGH_SCORE, new JsonPrimitive(0));
             }
-            
+
             body = getJSONBody();
 
         } catch (IOException e) {
@@ -60,8 +58,8 @@ public class StateManager {
             Writer writer = new FileWriter(Paths.get(TEMP_DIR, STORE_FILENAME).toString());
 
             if (this.body != null) {
-                Set<Entry<String, JsonElement>> existingKeys = this.body.entrySet(); 
-            
+                Set<Entry<String, JsonElement>> existingKeys = this.body.entrySet();
+
                 for (Entry<String, JsonElement> e : existingKeys) {
                     map.put(e.getKey(), e.getValue());
                 }
@@ -77,13 +75,14 @@ public class StateManager {
     }
 
     public int getHighScore() {
-       try {
-            if (this.body == null) throw new IOException();
+        try {
+            if (this.body == null)
+                throw new IOException();
             return this.body.get(STATE_KEYS.HIGH_SCORE.toString().toLowerCase()).getAsInt();
-       } catch (IOException e) {
-           e.printStackTrace();
-           return -1; 
-       }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return -1;
+        }
     }
 
     public void refreshJsonBody() {
@@ -97,6 +96,6 @@ public class StateManager {
     private JsonObject getJSONBody() throws IOException {
         Reader reader = Files.newBufferedReader(Paths.get(TEMP_DIR, STORE_FILENAME));
         JsonObject body = gson.fromJson(reader, JsonObject.class);
-        return body; 
+        return body;
     }
 }

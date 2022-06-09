@@ -3,13 +3,13 @@ package com.ballgame;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.awt.Graphics; 
+import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Font; 
-import java.awt.FontFormatException; 
-import java.awt.FontMetrics; 
-import java.awt.Rectangle; 
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.FontMetrics;
+import java.awt.Rectangle;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -19,26 +19,26 @@ import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public final class Eskiv extends JPanel implements Runnable, KeyListener {   
-    public static final int WIDTH = 750; 
-    public static final int HEIGHT = 500; 
-    public static final int HEADER_TOP = 27; 
+public final class Eskiv extends JPanel implements Runnable, KeyListener {
+    public static final int WIDTH = 750;
+    public static final int HEIGHT = 500;
+    public static final int HEADER_TOP = 27;
     private static final int FPS = 144;
 
-    private final Long startTime; 
-    private double deltaTime;     
+    private final Long startTime;
+    private double deltaTime;
     private double previousTime;
 
     private List<GameObject> obstacles;
-    private Player player; 
+    private Player player;
     private Goal goal;
 
-    private boolean gameStarted; 
+    private boolean gameStarted;
     private boolean gameLost;
-    private int gameScore = 0; 
+    private int gameScore = 0;
 
     // State
-    private final StateManager state; 
+    private final StateManager state;
 
     // Assets
     private final AssetManager am;
@@ -51,27 +51,33 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
         this.am = new AssetManager();
         this.state = new StateManager();
 
-        ROBOTO_12 = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/java/com/ballgame/assets/fonts/Roboto/Roboto-Regular.ttf")).deriveFont(12f);
-        ROBOTO_14 = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/java/com/ballgame/assets/fonts/Roboto/Roboto-Bold.ttf")).deriveFont(14f);;  
-        ROBOTO_24 = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/java/com/ballgame/assets/fonts/Roboto/Roboto-Bold.ttf")).deriveFont(24f);;  
-        ROBOTO_36 = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/java/com/ballgame/assets/fonts/Roboto/Roboto-Bold.ttf")).deriveFont(36f);
-       
+        ROBOTO_12 = Font.createFont(Font.TRUETYPE_FONT,
+                new File("src/main/java/com/ballgame/assets/fonts/Roboto/Roboto-Regular.ttf")).deriveFont(12f);
+        ROBOTO_14 = Font.createFont(Font.TRUETYPE_FONT,
+                new File("src/main/java/com/ballgame/assets/fonts/Roboto/Roboto-Bold.ttf")).deriveFont(14f);
+        ;
+        ROBOTO_24 = Font.createFont(Font.TRUETYPE_FONT,
+                new File("src/main/java/com/ballgame/assets/fonts/Roboto/Roboto-Bold.ttf")).deriveFont(24f);
+        ;
+        ROBOTO_36 = Font.createFont(Font.TRUETYPE_FONT,
+                new File("src/main/java/com/ballgame/assets/fonts/Roboto/Roboto-Bold.ttf")).deriveFont(36f);
+
         this.startTime = System.nanoTime();
-        
+
         JFrame frame = new JFrame("Eskiv Game");
-        frame.add(this);  
+        frame.add(this);
         frame.getContentPane().setBackground(Color.BLACK);
-        frame.setSize(Eskiv.WIDTH, Eskiv.HEIGHT + Eskiv.HEADER_TOP);  
-        frame.setLocationRelativeTo(null);  
+        frame.setSize(Eskiv.WIDTH, Eskiv.HEIGHT + Eskiv.HEADER_TOP);
+        frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.addKeyListener(this);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
-        frame.setVisible(true);  
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
 
         Thread t1 = new Thread(this);
         t1.start();
 
-        this.gameStarted = false; 
+        this.gameStarted = false;
 
         this.initGame();
     }
@@ -81,7 +87,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
 
         this.player = new Player(200, 200, 400);
 
-        this.gameScore = 0; 
+        this.gameScore = 0;
 
         this.state.refreshJsonBody();
 
@@ -89,7 +95,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
 
         generateRandomBall();
 
-        this.gameLost = false; 
+        this.gameLost = false;
     }
 
     public void generateRandomBall() {
@@ -104,17 +110,17 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
         int velY = random.nextInt(51) + 100;
 
         GameObject b = new Fireball(x, y, velX, velY, size, am.getFireballSprites());
-        obstacles.add(b); 
+        obstacles.add(b);
     }
 
     public void displayStartScreen(Graphics2D g2d) {
         int BOX_WIDTH = 300;
-        int BOX_HEIGHT = 200; 
+        int BOX_HEIGHT = 200;
 
         double x = (WIDTH * 0.5) - (BOX_WIDTH * 0.5);
         double y = (HEIGHT * 0.5) - (BOX_HEIGHT * 0.5);
 
-        g2d.setColor(new Color(0.075f,0.075f,0.075f,0.75f));
+        g2d.setColor(new Color(0.075f, 0.075f, 0.075f, 0.75f));
         g2d.fillRoundRect((int) x, (int) y, BOX_WIDTH, BOX_HEIGHT, 5, 5);
 
         g2d.setColor(Color.GREEN);
@@ -122,8 +128,10 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
 
         g2d.setColor(Color.WHITE);
         this.drawCenteredString(g2d, "Use Arrow Keys or WASD Keys", new Rectangle(WIDTH, HEIGHT - 25), ROBOTO_12);
-        this.drawCenteredString(g2d, "to Move the Blue Ball to the Green Goal", new Rectangle(WIDTH, HEIGHT + 10), ROBOTO_12);
-        this.drawCenteredString(g2d, "and try to avoid any Moving Obstacles.", new Rectangle(WIDTH, HEIGHT + 45), ROBOTO_12);
+        this.drawCenteredString(g2d, "to Move the Blue Ball to the Green Goal", new Rectangle(WIDTH, HEIGHT + 10),
+                ROBOTO_12);
+        this.drawCenteredString(g2d, "and try to avoid any Moving Obstacles.", new Rectangle(WIDTH, HEIGHT + 45),
+                ROBOTO_12);
 
         g2d.setColor(Color.GREEN);
         this.drawCenteredString(g2d, "Press \"S\" to Begin...", new Rectangle(WIDTH, HEIGHT + 125), ROBOTO_12);
@@ -131,12 +139,12 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
 
     public void displayPlayAgain(Graphics2D g2d) {
         int BOX_WIDTH = 300;
-        int BOX_HEIGHT = 200; 
+        int BOX_HEIGHT = 200;
 
         double x = (WIDTH * 0.5) - (BOX_WIDTH * 0.5);
         double y = (HEIGHT * 0.5) - (BOX_HEIGHT * 0.5);
 
-        g2d.setColor(new Color(0.075f,0.075f,0.075f,0.75f));
+        g2d.setColor(new Color(0.075f, 0.075f, 0.075f, 0.75f));
         g2d.fillRoundRect((int) x, (int) y, BOX_WIDTH, BOX_HEIGHT, 5, 5);
 
         g2d.setColor(Color.WHITE);
@@ -145,21 +153,23 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
         int previousScore = this.state.getHighScore();
         if (this.gameScore > previousScore) {
             g2d.setColor(Color.GREEN);
-            this.drawCenteredString(g2d, "New High Score! Your Scored " + this.gameScore + " Points.", new Rectangle(WIDTH, HEIGHT - 25), ROBOTO_14);
+            this.drawCenteredString(g2d, "New High Score! Your Scored " + this.gameScore + " Points.",
+                    new Rectangle(WIDTH, HEIGHT - 25), ROBOTO_14);
         } else {
             g2d.setColor(Color.WHITE);
-            this.drawCenteredString(g2d, "Your Scored " + this.gameScore + " Points.", new Rectangle(WIDTH, HEIGHT - 25), ROBOTO_14);
+            this.drawCenteredString(g2d, "Your Scored " + this.gameScore + " Points.",
+                    new Rectangle(WIDTH, HEIGHT - 25), ROBOTO_14);
         }
-        
+
         g2d.setColor(Color.GREEN);
         this.drawCenteredString(g2d, "Press \"R\" to Play Again!", new Rectangle(WIDTH, HEIGHT + 100), ROBOTO_14);
     }
 
     @Override
-    public void paintComponent(Graphics g)  // Need to have this method to complete the painting
-	{   
+    public void paintComponent(Graphics g) // Need to have this method to complete the painting
+    {
         super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D)g;
+        Graphics2D g2d = (Graphics2D) g;
 
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, Eskiv.WIDTH, Eskiv.HEIGHT);
@@ -169,7 +179,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
 
         try {
             this.gameLoop(g2d, this.previousTime);
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -184,7 +194,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    } 
+    }
 
     public void drawCenteredString(Graphics g, String text, Rectangle rect, Font font) {
         FontMetrics metrics = g.getFontMetrics(font);
@@ -198,7 +208,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
         // Display FPS
         g2d.setFont(ROBOTO_12);
         g2d.setColor(Color.WHITE);
-        double currentFPS = 1 / (deltaTime - previousTime); 
+        double currentFPS = 1 / (deltaTime - previousTime);
         g2d.drawString((int) currentFPS + "", 20, 30);
 
         // Score Board
@@ -206,17 +216,17 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
         // High Score
         this.drawCenteredString(g2d, "High Score: " + this.state.getHighScore(), new Rectangle(WIDTH, 200), ROBOTO_12);
 
-        // Update Obstacles 
+        // Update Obstacles
         for (GameObject obj : this.obstacles) {
             if (obj instanceof WallBarrier) {
                 WallBarrier wb = (WallBarrier) obj;
                 wb.render(g2d);
 
-                if (wb.getShape().intersects(this.player.getShape().getBounds2D())){
+                if (wb.getShape().intersects(this.player.getShape().getBounds2D())) {
                     this.player.setVelX(0);
                     if (wb.getSide() == WallBarrier.Side.RIGHT) {
                         if (this.player.getX() > wb.getCenterX()) {
-                            this.player.setTransformX(wb.getX() +  wb.getWidth());
+                            this.player.setTransformX(wb.getX() + wb.getWidth());
                         } else {
                             this.player.setTransformX(wb.getX() - this.player.getDiameter());
                         }
@@ -236,7 +246,6 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
             if (obj instanceof Fireball) {
                 Fireball b = (Fireball) obj;
 
-
                 if (b.intersects(this.player)) {
                     int highScore = this.state.getHighScore();
 
@@ -244,7 +253,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
                         this.state.updateKeyWithPrimitive(StateManager.STATE_KEYS.HIGH_SCORE, this.gameScore);
                     }
 
-                    this.gameLost = true; 
+                    this.gameLost = true;
                 }
 
                 b.render(g2d);
@@ -258,7 +267,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
                 }
 
                 // Constant Accommodates for MacOS Header Height
-               
+
                 if (b.getY() + b.getDiameter() >= Eskiv.HEIGHT) {
                     b.setVelY(-b.getVelY());
                 }
@@ -272,11 +281,12 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
                 }
             }
         }
-    
+
         goal.render(g2d);
 
         player.render(g2d);
-        if (!gameLost && gameStarted) player.update(deltaTime, previousTime);
+        if (!gameLost && gameStarted)
+            player.update(deltaTime, previousTime);
 
         if (player.getX() > Eskiv.WIDTH) {
             player.setTransformX(-player.getDiameter());
@@ -303,11 +313,11 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
             goal.setTransform(x, y);
 
             if (this.gameScore == 15) {
-                WallBarrier wb = new WallBarrier(10, 100, WallBarrier.Side.LEFT); 
+                WallBarrier wb = new WallBarrier(10, 100, WallBarrier.Side.LEFT);
                 wb.setVelY(100);
                 this.obstacles.add(wb);
             } else if (this.gameScore == 35) {
-                WallBarrier wb = new WallBarrier(10, 100, WallBarrier.Side.RIGHT); 
+                WallBarrier wb = new WallBarrier(10, 100, WallBarrier.Side.RIGHT);
                 wb.setVelY(150);
                 this.obstacles.add(wb);
             }
@@ -325,8 +335,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
     }
 
     @Override
-    public void keyPressed(KeyEvent ke)
-    {
+    public void keyPressed(KeyEvent ke) {
         // Reset Game
         if (ke.getKeyCode() == 82 && this.gameLost) {
             this.initGame();
@@ -355,7 +364,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
     }
 
     @Override
-    public void keyReleased(KeyEvent ke){
+    public void keyReleased(KeyEvent ke) {
         if (ke.getKeyCode() == 37 || ke.getKeyCode() == 65) {
             this.player.setLeft(false);
         }
@@ -371,10 +380,11 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
         if (ke.getKeyCode() == 40 || ke.getKeyCode() == 83) {
             this.player.setDown(false);
         }
-    }   
+    }
 
-    @Override 
-    public void keyTyped(KeyEvent ke) {};
+    @Override
+    public void keyTyped(KeyEvent ke) {
+    };
 
     public static void main(String[] args) {
         try {
@@ -383,7 +393,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }  catch (FontFormatException e) {
+        } catch (FontFormatException e) {
             e.printStackTrace();
         }
     }

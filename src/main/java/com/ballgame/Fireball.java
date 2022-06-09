@@ -7,9 +7,9 @@ import java.awt.image.*;
 import java.util.List;
 
 public class Fireball extends Circle {
-    private Shape shape; 
-    private double velX; 
-    private double velY; 
+    private Shape shape;
+    private double velX;
+    private double velY;
 
     public Fireball(List<BufferedImage> sprites) {
         this(0, 0, 0, 80, 80, sprites);
@@ -18,27 +18,33 @@ public class Fireball extends Circle {
     public Fireball(int x, int y, double velX, double velY, int r, List<BufferedImage> sprites) {
         super(x, y);
 
-        this.initSprites(sprites, 15,1.6);
-     
-        this.velX = velX; 
+        this.initSprites(sprites, 15, 1.6);
+
+        this.velX = velX;
         this.velY = velY;
-        this.r = r; 
+        this.r = r;
 
         this.shape = new Ellipse2D.Double((int) this.x, (int) this.y, this.getDiameter(), this.getDiameter());
     }
 
-    public Ellipse2D.Double getShape() { return (Ellipse2D.Double) this.shape; }
+    public Ellipse2D.Double getShape() {
+        return (Ellipse2D.Double) this.shape;
+    }
 
-    public double getVelX() { return this.velX; }
+    public double getVelX() {
+        return this.velX;
+    }
 
-    public double getVelY() { return this.velY; }
+    public double getVelY() {
+        return this.velY;
+    }
 
     public void setVelX(double velX) {
-        this.velX = velX; 
+        this.velX = velX;
     }
 
     public void setVelY(double velY) {
-        this.velY = velY; 
+        this.velY = velY;
     }
 
     public void rotateSprites() {
@@ -50,8 +56,7 @@ public class Fireball extends Circle {
     }
 
     public void update(double deltaTime, double previousTime) {
-        boolean incrementedFrame = 
-        this.incrementImageFrame(deltaTime, previousTime);
+        boolean incrementedFrame = this.incrementImageFrame(deltaTime, previousTime);
 
         if (incrementedFrame) {
             double angle = Math.atan(this.velX / -this.velY);
@@ -59,17 +64,18 @@ public class Fireball extends Circle {
             this.image = rotatedSprite;
         }
 
-        double incrementX = this.velX * (deltaTime - previousTime); 
-        double incrementY = this.velY * (deltaTime - previousTime); 
+        double incrementX = this.velX * (deltaTime - previousTime);
+        double incrementY = this.velY * (deltaTime - previousTime);
 
         super.setTransform(this.x + incrementX, this.y + incrementY);
     }
 
-    public void render(Graphics2D g2d) {     
-        int diameter = (int)(this.getDiameter()* this.imagePaddingFactor); 
+    public void render(Graphics2D g2d) {
+        int diameter = (int) (this.getDiameter() * this.imagePaddingFactor);
         int translationAdjustment = (diameter - this.getDiameter()) / 2;
 
-        g2d.drawImage(this.image, (int) this.x - translationAdjustment, (int) this.y - translationAdjustment, diameter, diameter, null);
+        g2d.drawImage(this.image, (int) this.x - translationAdjustment, (int) this.y - translationAdjustment, diameter,
+                diameter, null);
         Ellipse2D.Double obj = (Ellipse2D.Double) this.shape;
         obj.setFrame(this.x, this.y, this.getDiameter(), this.getDiameter());
     }
