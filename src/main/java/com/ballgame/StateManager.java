@@ -25,7 +25,8 @@ public class StateManager {
     private final Gson gson;
 
     public static enum STATE_KEYS {
-        HIGH_SCORE
+        HIGH_SCORE,
+        LIVES
     }
 
     public StateManager() {
@@ -40,12 +41,11 @@ public class StateManager {
         try {
             if (!stateFile.exists()) {
                 stateFile.createNewFile();
-
+                body = getJSONBody();
                 this.updateKeyWithPrimitive(STATE_KEYS.HIGH_SCORE, new JsonPrimitive(0));
+                this.updateKeyWithPrimitive(STATE_KEYS.LIVES, new JsonPrimitive(1));
             }
-
             body = getJSONBody();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -56,33 +56,44 @@ public class StateManager {
             Map<String, Object> map = new HashMap<>();
 
             Writer writer = new FileWriter(Paths.get(TEMP_DIR, STORE_FILENAME).toString());
-
             if (this.body != null) {
                 Set<Entry<String, JsonElement>> existingKeys = this.body.entrySet();
-
                 for (Entry<String, JsonElement> e : existingKeys) {
                     map.put(e.getKey(), e.getValue());
                 }
-            }
+            } 
 
             map.put(key.toString().toLowerCase(), value);
+
             new Gson().toJson(map, writer);
 
             writer.close();
+
+            if (this.body == null) this.body = this.getJSONBody();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public int getHighScore() {
+    public JsonElement getKey(STATE_KEYS key) {
         try {
             if (this.body == null)
                 throw new IOException();
-            return this.body.get(STATE_KEYS.HIGH_SCORE.toString().toLowerCase()).getAsInt();
+            return this.body.get(key.toString().toLowerCase());
         } catch (IOException e) {
             e.printStackTrace();
-            return -1;
+            return null;
         }
+    }
+
+    public int getHighScore() {
+        JsonElement ele = getKey(STATE_KEYS.HIGH_SCORE);
+        return ele != null ? ele.getAsInt() : -1; 
+    }
+
+    public int getLives() {
+        JsonElement ele = getKey(STATE_KEYS.LIVES);
+        return ele != null ? ele.getAsInt() : -1; 
     }
 
     public void refreshJsonBody() {

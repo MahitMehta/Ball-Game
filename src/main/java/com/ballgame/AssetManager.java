@@ -20,10 +20,19 @@ public class AssetManager {
             "fireball/fb-5.png"
     };
 
+    private String[] heartSpritesPaths = {
+        "static/heart.png"
+};
+
     private List<BufferedImage> fireballSprites;
+    private List<BufferedImage> heartSprites; 
 
     public List<BufferedImage> getFireballSprites() {
         return this.fireballSprites;
+    }
+    
+    public List<BufferedImage> getHeartSprites() {
+        return this.heartSprites;
     }
 
     public static <T> LinkedList<T> clone(Class<T> generic, List<T> e) {
@@ -37,19 +46,21 @@ public class AssetManager {
 
     public AssetManager() {
         fireballSprites = new ArrayList<BufferedImage>();
+        heartSprites = new ArrayList<BufferedImage>();
 
         try {
-            loadBallAssets();
+            loadAssets(this.fireballSprites, this.fireballSpritesPaths);
+            loadAssets(this.heartSprites, this.heartSpritesPaths);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void loadBallAssets() throws IOException {
-        for (String path : fireballSpritesPaths) {
+    public void loadAssets(List<BufferedImage> sprites, String[] spritePaths) throws IOException  {
+        for (String path : spritePaths) {
             File img = new File(Paths.get(ASSETS_PATH, path).toString());
             BufferedImage image = ImageIO.read(img);
-            this.fireballSprites.add(image);
+            sprites.add(image);
         }
     }
 }

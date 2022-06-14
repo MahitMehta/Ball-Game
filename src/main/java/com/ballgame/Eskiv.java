@@ -10,12 +10,14 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.FontMetrics;
 import java.awt.Rectangle;
+import java.awt.image.*;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 
+import javax.sound.sampled.Clip;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -36,9 +38,13 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
     private boolean gameStarted;
     private boolean gameLost;
     private int gameScore = 0;
+    private int currentLives;
 
     // State
     private final StateManager state;
+
+    // Audio
+    private final AudioManager audio; 
 
     // Assets
     private final AssetManager am;
@@ -46,10 +52,16 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
     private final Font ROBOTO_14;
     private final Font ROBOTO_24;
     private final Font ROBOTO_36;
+    private final GameObject heart; 
+
+    private boolean currentlyIntersecting; 
+    private long lastIntersectingTime; // nanoseconds
+    private final int INTERSECTING_DEBOUNCE = 500; // milliseconds
 
     private Eskiv() throws InterruptedException, IOException, FontFormatException {
         this.am = new AssetManager();
         this.state = new StateManager();
+        this.audio = new AudioManager();
 
         ROBOTO_12 = Font.createFont(Font.TRUETYPE_FONT,
                 new File("src/main/java/com/ballgame/assets/fonts/Roboto/Roboto-Regular.ttf")).deriveFont(12f);
@@ -79,6 +91,8 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
 
         this.gameStarted = false;
 
+        this.heart = new StaticImage(0, 0, 45, 45, (ArrayList<BufferedImage>) am.getHeartSprites());
+    
         this.initGame();
     }
 
@@ -89,7 +103,13 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
 
         this.gameScore = 0;
 
+        this.currentlyIntersecting = false; 
+
+        this.lastIntersectingTime = System.nanoTime();
+
         this.state.refreshJsonBody();
+
+        this.currentLives = this.state.getLives();
 
         this.goal = new Goal(100, 100, 15);
 
@@ -130,7 +150,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
         this.drawCenteredString(g2d, "Use Arrow Keys or WASD Keys", new Rectangle(WIDTH, HEIGHT - 25), ROBOTO_12);
         this.drawCenteredString(g2d, "to Move the Blue Ball to the Green Goal", new Rectangle(WIDTH, HEIGHT + 10),
                 ROBOTO_12);
-        this.drawCenteredString(g2d, "and try to avoid any Moving Obstacles.", new Rectangle(WIDTH, HEIGHT + 45),
+        this.drawCenteredString(g2d, "and try to avoid any Firballs (You Have " + this.state.getLives() + " Lives). ", new Rectangle(WIDTH, HEIGHT + 45),
                 ROBOTO_12);
 
         g2d.setColor(Color.GREEN);
@@ -211,6 +231,18 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
         double currentFPS = 1 / (deltaTime - previousTime);
         g2d.drawString((int) currentFPS + "", 20, 30);
 
+        StaticImage heart = (StaticImage) this.heart;
+
+        for (int i = this.state.getLives(); i > 0; i--) {
+            if (i > this.currentLives) continue;  
+
+            int HEART_MARGIN_RIGHT = 10; 
+            int HEART_MARGIN_TOP = 5; 
+            heart.setTransformX(Eskiv.WIDTH - i * heart.getWidth() - HEART_MARGIN_RIGHT);
+            heart.setTransformY(HEART_MARGIN_TOP);
+            heart.render(g2d);
+        }
+
         // Score Board
         this.drawCenteredString(g2d, "SCORE: " + this.gameScore, new Rectangle(WIDTH, 100), ROBOTO_36);
         // High Score
@@ -253,7 +285,22 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
                         this.state.updateKeyWithPrimitive(StateManager.STATE_KEYS.HIGH_SCORE, this.gameScore);
                     }
 
-                    this.gameLost = true;
+                    double deltaSinceLastInteraction = (System.nanoTime() - this.lastIntersectingTime) / (double) 1000000; // milliseconds
+                    if (!this.currentlyIntersecting && deltaSinceLastInteraction >= this.INTERSECTING_DEBOUNCE && this.currentLives > 0 && !this.gameLost) {
+                        this.currentLives--;
+                        this.audio.fireballContactEffect.setMicrosecondPosition(0);
+                        this.audio.fireballContactEffect.start();
+                        if (this.currentLives == 0) {
+                            this.audio.gameMusic.stop();
+                            this.audio.loseMusic.setMicrosecondPosition(0);
+                            this.audio.loseMusic.start();
+                            this.gameLost = true;
+                        }
+                        this.currentlyIntersecting = true; 
+                        this.lastIntersectingTime = System.nanoTime();
+                    }
+                } else {
+                    this.currentlyIntersecting = false; 
                 }
 
                 b.render(g2d);
@@ -330,6 +377,7 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
         }
 
         if (!gameStarted) {
+            this.audio.introMusic.loop(Clip.LOOP_CONTINUOUSLY);
             this.displayStartScreen(g2d);
         }
     }
@@ -338,11 +386,15 @@ public final class Eskiv extends JPanel implements Runnable, KeyListener {
     public void keyPressed(KeyEvent ke) {
         // Reset Game
         if (ke.getKeyCode() == 82 && this.gameLost) {
+            this.audio.gameMusic.loop(Clip.LOOP_CONTINUOUSLY);
+            this.audio.loseMusic.stop();
             this.initGame();
         }
 
         // Start Game
         if (ke.getKeyCode() == 83 && !this.gameStarted) {
+            this.audio.introMusic.stop();
+            this.audio.gameMusic.loop(Clip.LOOP_CONTINUOUSLY);
             this.gameStarted = true;
         }
 
