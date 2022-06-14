@@ -59,9 +59,9 @@ public class Fireball extends Circle {
         boolean incrementedFrame = this.incrementImageFrame(deltaTime, previousTime);
 
         if (incrementedFrame) {
-            double angle = Math.atan(this.velX / -this.velY);
-            BufferedImage rotatedSprite = this.rotateImage((BufferedImage) this.image, angle * 180);
-            this.image = rotatedSprite;
+            // double angle = Math.atan(this.velX / -this.velY);
+            //BufferedImage rotatedSprite = this.rotateImage((BufferedImage) this.image, angle * 180);
+            //this.image = rotatedSprite;
         }
 
         double incrementX = this.velX * (deltaTime - previousTime);
