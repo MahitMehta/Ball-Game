@@ -58,10 +58,11 @@ public class Fireball extends Circle {
     public void update(double deltaTime, double previousTime) {
         boolean incrementedFrame = this.incrementImageFrame(deltaTime, previousTime);
 
+         // TODO: Needs to be more efficient, causing major performance issues when ball count is higher than 15
         if (incrementedFrame) {
-            // double angle = Math.atan(this.velX / -this.velY);
-            //BufferedImage rotatedSprite = this.rotateImage((BufferedImage) this.image, angle * 180);
-            //this.image = rotatedSprite;
+            double angle = Math.atan(this.velX / -this.velY);
+            BufferedImage rotatedSprite = this.rotateImage((BufferedImage) this.image, angle * 180);
+            this.image = rotatedSprite;
         }
 
         double incrementX = this.velX * (deltaTime - previousTime);
