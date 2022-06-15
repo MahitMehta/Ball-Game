@@ -103,6 +103,7 @@ public abstract class GameObject {
         return rotated;
     }
 
+
     public void setImageFrame(double frame) {
         this.imageFrame = frame;
     }

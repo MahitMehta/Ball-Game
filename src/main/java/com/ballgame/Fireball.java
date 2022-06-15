@@ -1,6 +1,7 @@
 package com.ballgame;
 
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.Shape;
 import java.awt.image.*;
@@ -61,8 +62,8 @@ public class Fireball extends Circle {
          // TODO: Needs to be more efficient, causing major performance issues when ball count is higher than 15
         if (incrementedFrame) {
             double angle = Math.atan(this.velX / -this.velY);
-            BufferedImage rotatedSprite = this.rotateImage((BufferedImage) this.image, angle * 180);
-            this.image = rotatedSprite;
+            //BufferedImage rotatedSprite = this.rotateImage((BufferedImage) this.image, angle * 180);
+            //this.image = rotatedSprite;
         }
 
         double incrementX = this.velX * (deltaTime - previousTime);
@@ -72,11 +73,21 @@ public class Fireball extends Circle {
     }
 
     public void render(Graphics2D g2d) {
+        AffineTransform backup = g2d.getTransform();
+
+        double angle = Math.atan(this.velX / this.velY);
+    
         int diameter = (int) (this.getDiameter() * this.imagePaddingFactor);
         int translationAdjustment = (diameter - this.getDiameter()) / 2;
 
-        g2d.drawImage(this.image, (int) this.x - translationAdjustment, (int) this.y - translationAdjustment, diameter,
+        int x = (int) this.x - translationAdjustment;
+        int y = (int) this.y - translationAdjustment;
+
+        AffineTransform a = AffineTransform.getRotateInstance(angle, this.x + this.getRadius(), this.y + this.getRadius());
+        g2d.setTransform(a);
+        g2d.drawImage(this.image, x, y, diameter,
                 diameter, null);
+        g2d.setTransform(backup);
         Ellipse2D.Double obj = (Ellipse2D.Double) this.shape;
         obj.setFrame(this.x, this.y, this.getDiameter(), this.getDiameter());
     }
